@@ -1,0 +1,1 @@
+ENTRAR_A_UNA_BD_DOCKER: docker exec -it <name-container> psql -U <user-db> -d <name-db>

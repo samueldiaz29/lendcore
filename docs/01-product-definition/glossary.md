@@ -1,0 +1,30 @@
+# Shared glossary
+
+- **Principal:** funded amount outstanding before amortization.
+- **Compensatory interest:** price for use of principal under the contract and applicable limits.
+- **Default interest:** simple interest for non-payment on a permitted overdue base, without capitalization in the initial design.
+- **Effective rate:** relates the return/cost for a period and incorporates the stated compounding.
+- **Nominal rate:** annual rate expressed with a declared compounding frequency.
+- **Prepayment:** advance payment applied to principal; reduces future interest and carries no prohibited penalty.
+- **Installment advance:** payment assigned to future installments without automatically reducing principal in the same way as a principal prepayment; the option must be explained and recorded under the applicable consumer-protection rules.
+- **15-day frequency:** an interval of 15 calendar days from an anchor; it is not the same as two fixed dates per calendar month.
+- **Overdue day:** day after the contractual due date when the obligation remains unpaid, under the contract/schedule.
+- **ACT/360, ACT/365, 30E/360:** day-count conventions defining the annual fraction in section 06.
+- **SBS/BCRP/INDECOPI/ANPD:** Peruvian supervisory/authorities for their respective subject matters; applicability depends on institution, product, and customer.
+- **Assessment / credit evaluation:** A dated analysis of verified or declared repayment resources, current obligations, risk signals, and requested exposure. It supports a decision but is not the decision itself.
+- **Approval / credit decision:** An authorization by a person or governed policy with delegated authority to approve, condition, return, or reject a specific request. It has a scope and validity period.
+- **Capacity to repay:** Evidence-based ability to meet proposed and existing obligations from income or business cash flow. It is distinct from collateral value.
+- **Exposure:** The amount of credit risk the institution has or may take, including relevant commitments and related-party/group aggregation under policy. It is not always equal to current outstanding principal.
+- **Guarantee / collateral:** Property, rights, or a third-party promise that may support recovery if the borrower defaults. A valuation or promise alone does not establish legal perfection or immediate liquidity.
+- **Delinquency:** A servicing condition in which an amount remains unpaid after its due date. It can coexist with an active loan and is different from a prudential debtor classification.
+- **Rescheduling:** Approved change to future dates or repayment terms on an existing obligation. It does not by itself create a new loan or extinguish the original debt.
+- **Refinancing:** A new financing arrangement used to settle or replace an existing obligation after required approval, contract, and effective funding/accounting treatment.
+- **Write-off:** An approved accounting or prudential recognition that an amount is not expected to be recovered under applicable treatment. It does not by itself forgive the legal debt.
+- **Value date:** Date from which an event affects contractual accrual/balance under the applicable agreement. It differs from the date the instruction was received or settled operationally.
+- **Settlement:** Confirmation that the monetary transfer/payment completed through the responsible external or bank process. A request or timeout is not settlement.
+- **Operational ledger:** LendCore's ordered record of loan-related monetary events used to reconstruct its contractual servicing balance. It is not the general ledger.
+- **Schedule version:** A preserved calculation snapshot of installments and assumptions for a loan at a given point. A recalculation produces a successor version; it does not rewrite historical evidence.
+- **LTV (loan-to-value):** A ratio comparing a loan/exposure amount with an assessed collateral value under a specified methodology. It is one risk measure and does not prove repayment capacity or perfected security.
+- **TCEA (total effective annual cost):** Customer-facing total annualized cost indicator defined by applicable rules and methodology. It can include items beyond contractual interest and must not be presented as synonymous with nominal rate.
+- **Maturity:** Contractual date on which the last scheduled amount is due, subject to an effective amendment or settlement.
+- **Suspense balance:** Temporarily held funds not yet identified or applied to a particular loan obligation. It is not principal repayment or income until resolved under policy.
