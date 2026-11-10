@@ -1,0 +1,157 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-identification-document
+      author: lendcore
+
+      changes:
+        - createTable:
+            tableName: customer_identification_document
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_customer_identification_document
+                    nullable: false
+
+              - column:
+                  name: customer_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: document_type
+                  type: VARCHAR(40)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: document_number
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: normalized_number
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: issuing_country
+                  type: CHAR(2)
+                  defaultValue: PE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: is_primary
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: verification_status
+                  type: VARCHAR(30)
+                  defaultValue: PENDING
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: verified_at
+                  type: TIMESTAMPTZ
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: customer_identification_document
+            baseColumnNames: customer_id
+            constraintName: fk_customer_document_customer
+            referencedTableName: customer
+            referencedColumnNames: id
+            onDelete: RESTRICT
+
+        - sql:
+            sql: |
+              ALTER TABLE customer_identification_document
+              ADD CONSTRAINT chk_document_type
+              CHECK (
+                document_type IN (
+                  'DNI',
+                  'CE',
+                  'PASSPORT',
+                  'CPP',
+                  'RUC',
+                  'OTHER'
+                )
+              );
+
+        - sql:
+            sql: |
+              ALTER TABLE customer_identification_document
+              ADD CONSTRAINT chk_document_verification_status
+              CHECK (
+                verification_status IN (
+                  'PENDING',
+                  'VERIFIED',
+                  'REJECTED'
+                )
+              );
+
+        - sql:
+            sql: |
+              ALTER TABLE customer_identification_document
+              ADD CONSTRAINT chk_document_number_not_empty
+              CHECK (
+                LENGTH(TRIM(document_number)) > 0
+                AND LENGTH(TRIM(normalized_number)) > 0
+              );
+
+        - sql:
+            sql: |
+              ALTER TABLE customer_identification_document
+              ADD CONSTRAINT chk_document_country
+              CHECK (issuing_country ~ '^[A-Z]{2}$');
+
+        - sql:
+            sql: |
+              ALTER TABLE customer_identification_document
+              ADD CONSTRAINT chk_document_verified_at
+              CHECK (
+                verification_status = 'VERIFIED'
+                OR verified_at IS NULL
+              );
+
+        - sql:
+            sql: |
+              CREATE UNIQUE INDEX uk_customer_document_identity
+              ON customer_identification_document (
+                issuing_country,
+                document_type,
+                normalized_number
+              );
+
+        - sql:
+            sql: |
+              CREATE UNIQUE INDEX uk_customer_primary_document
+              ON customer_identification_document (customer_id)
+              WHERE is_primary = TRUE;
+
+        - createIndex:
+            tableName: customer_identification_document
+            indexName: idx_customer_document_customer_id
+            columns:
+              - column:
+                  name: customer_id
+
+      rollback:
+        - dropTable:
+            tableName: customer_identification_document
