@@ -1,0 +1,132 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-customer
+      author: lendcore
+      changes:
+        - createTable:
+            tableName: customer
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_customer
+                    nullable: false
+              - column:
+                  name: customer_type
+                  type: VARCHAR(30)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(30)
+                  defaultValue: PENDING
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMPTZ
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+        - sql:
+            sql: >
+              ALTER TABLE customer
+              ADD CONSTRAINT chk_customer_type
+              CHECK (customer_type IN ('NATURAL_PERSON', 'LEGAL_ENTITY'));
+
+        - sql:
+            sql: >
+              ALTER TABLE customer
+              ADD CONSTRAINT chk_customer_status
+              CHECK (status IN ('PENDING', 'ACTIVE', 'INACTIVE', 'SUSPENDED', 'REJECTED'));
+
+        - createTable:
+            tableName: customer_person
+            columns:
+              - column:
+                  name: customer_id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_customer_person
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: birth_date
+                  type: DATE
+
+        - addForeignKeyConstraint:
+            baseTableName: customer_person
+            baseColumnNames: customer_id
+            constraintName: fk_customer_person_customer
+            referencedTableName: customer
+            referencedColumnNames: id
+            onDelete: RESTRICT
+
+        - createTable:
+            tableName: customer_entity
+            columns:
+              - column:
+                  name: customer_id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_customer_entity
+                    nullable: false
+              - column:
+                  name: legal_name
+                  type: VARCHAR(200)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: trade_name
+                  type: VARCHAR(200)
+              - column:
+                  name: registration_country
+                  type: CHAR(2)
+                  defaultValue: PE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: incorporation_date
+                  type: DATE
+
+        - addForeignKeyConstraint:
+            baseTableName: customer_entity
+            baseColumnNames: customer_id
+            constraintName: fk_customer_entity_customer
+            referencedTableName: customer
+            referencedColumnNames: id
+            onDelete: RESTRICT
+
+      rollback:
+        - dropTable:
+            tableName: customer_entity
+        - dropTable:
+            tableName: customer_person
+        - dropTable:
+            tableName: customer
