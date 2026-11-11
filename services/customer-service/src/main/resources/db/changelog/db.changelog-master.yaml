@@ -10,3 +10,7 @@ databaseChangeLog:
   - include:
       file: changes/003-customer-representative.yaml
       relativeToChangelogFile: true
+
+  - include:
+      file: changes/004-customer-status-history.yaml
+      relativeToChangelogFile: true
