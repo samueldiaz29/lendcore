@@ -1,0 +1,79 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-customer-status-history
+      author: lendcore
+      changes:
+        - createTable:
+            tableName: customer_status_history
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_customer_status_history
+
+              - column:
+                  name: customer_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: previous_status
+                  type: VARCHAR(30)
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: new_status
+                  type: VARCHAR(30)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: reason
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: changed_by
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: changed_at
+                  type: TIMESTAMPTZ
+                  defaultValueComputed: CURRENT_TIMESTAMP()
+                  constraints:
+                    nullable: false
+
+        - sql:
+            sql: >
+              ALTER TABLE customer_status_history
+              ADD CONSTRAINT  chk_customer_status_history_new_status CHECK 
+              (new_status IN ('PENDING', 'ACTIVE', 'INACTIVE', 'SUSPENDED', 'REJECTED'))
+
+        - sql:
+            sql: >
+              ALTER TABLE customer_status_history
+              ADD CONSTRAINT  chk_customer_status_history_previous_status CHECK 
+              (previous_status IS NULL OR previous_status IN ('PENDING', 'ACTIVE', 'INACTIVE', 'SUSPENDED', 'REJECTED'))
+
+        - addForeignKeyConstraint:
+            constraintName: fk_customer_status_history_and_customer
+            baseColumnNames: customer_id
+            baseTableName: customer_status_history
+            referencedColumnNames: id
+            referencedTableName: customer
+            validate: true
+            onDelete: RESTRICT
+
+        - createIndex:
+            indexName: idx_customer_status_history
+            tableName: customer_status_history
+            columns:
+              - column:
+                  name: customer_id
