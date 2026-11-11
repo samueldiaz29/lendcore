@@ -1,0 +1,159 @@
+databaseChangeLog:
+  -  changeSet:
+       id:  003-customer-representative
+       author:  lendcore
+
+       changes:
+         - createTable:
+             tableName: customer_representative
+             columns:
+               - column:
+                   name: id
+                   type: UUID
+                   constraints:
+                     primaryKey: true
+                     primaryKeyName: pk_customer_representative
+                     nullable: false
+
+               - column:
+                   name: customer_entity_id
+                   type: UUID
+                   constraints:
+                     nullable: false
+
+               - column:
+                   name: representative_customer_id
+                   type: UUID
+                   constraints:
+                     nullable: false
+
+               - column:
+                   name: role
+                   type: VARCHAR(50)
+                   constraints:
+                     nullable: false
+
+               - column:
+                   name: valid_from
+                   type: DATE
+                   constraints:
+                     nullable: false
+
+               - column:
+                   name: valid_until
+                   type: DATE
+                   constraints:
+                     nullable: true
+
+               - column:
+                   name: created_at
+                   type: TIMESTAMPTZ
+                   constraints:
+                     nullable: false
+                   defaultValueComputed: CURRENT_TIMESTAMP()
+
+         - addForeignKeyConstraint:
+             baseColumnNames:  customer_entity_id
+             baseTableName: customer_representative
+             constraintName: fk_customer_representative_and_customer_entity
+             referencedColumnNames:  customer_id
+             referencedTableName:  customer_entity
+             validate:  true
+             onDelete:  RESTRICT
+
+         - addForeignKeyConstraint:
+             baseColumnNames: representative_customer_id
+             baseTableName: customer_representative
+             constraintName: fk_customer_representative_and_customer
+             referencedColumnNames: customer_id
+             referencedTableName: customer_person
+             validate: true
+             onDelete:  RESTRICT
+
+         - addUniqueConstraint:
+             columnNames: customer_entity_id, representative_customer_id
+             constraintName: uq_customer_entity_and_representative_customer
+             tableName: customer_representative
+
+         - sql:
+             sql: |
+               ALTER TABLE customer_representative
+               ADD CONSTRAINT valid_until_check
+               CHECK (valid_until IS NULL OR valid_until >= valid_from);
+
+         - createIndex:
+             indexName:  idx_customer_representative
+             tableName:  customer_representative
+             columns:
+               - column:
+                   name: representative_customer_id
+
+         - createTable:
+             tableName: representative_authority_evidence
+             columns:
+               - column:
+                   name: id
+                   type: UUID
+                   constraints:
+                     primaryKey: true
+                     primaryKeyName: pk_representative_authority_evidence
+                     nullable: false
+
+               - column:
+                   name: representative_id
+                   type: UUID
+                   constraints:
+                     nullable: false
+
+               - column:
+                   name: evidence_type
+                   type: VARCHAR(50)
+                   constraints:
+                     nullable: false
+
+               - column:
+                   name: document_reference
+                   type: VARCHAR(255)
+                   constraints:
+                     nullable: false
+
+               - column:
+                   name: issued_at
+                   type: DATE
+                   constraints:
+                     nullable: true
+
+               - column:
+                   name: expires_at
+                   type: DATE
+                   constraints:
+                     nullable: true
+
+               - column:
+                   name: created_at
+                   type: TIMESTAMPTZ
+                   constraints:
+                     nullable: false
+                   defaultValueComputed: CURRENT_TIMESTAMP()
+
+         - addForeignKeyConstraint:
+             constraintName: fk_representative_authority_evidence_and_representative
+             baseColumnNames: representative_id
+             baseTableName: representative_authority_evidence
+             referencedColumnNames: id
+             referencedTableName: customer_representative
+             onDelete:  RESTRICT
+             validate: true
+
+         - sql:
+             sql: |
+               ALTER TABLE representative_authority_evidence
+               ADD CONSTRAINT expires_at_check
+               CHECK (expires_at IS NULL OR issued_at IS NULL OR expires_at >= issued_at);
+
+         - createIndex:
+             indexName: idx_representative_authority_evidence
+             tableName: representative_authority_evidence
+             columns:
+               - column:
+                   name: representative_id
