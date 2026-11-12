@@ -14,3 +14,7 @@ databaseChangeLog:
   - include:
       file: changes/004-customer-status-history.yaml
       relativeToChangelogFile: true
+
+  - include:
+      file: changes/005-customer-legal-basis.yaml
+      relativeToChangelogFile: true

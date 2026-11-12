@@ -1,0 +1,103 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-customer-legal-basis
+      author: lendcore
+      changes:
+        - createTable:
+            tableName: customer_legal_basis
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_customer_legal_basis
+                    nullable: false
+
+              - column:
+                  name: customer_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: purpose
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: legal_basis
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: policy_version
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: captured_at
+                  type: TIMESTAMPTZ
+                  defaultValueComputed: CURRENT_TIMESTAMP()
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: withdrawn_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: source
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            constraintName: fk_customer_legal_basis_and_customer
+            baseColumnNames: customer_id
+            baseTableName: customer_legal_basis
+            referencedColumnNames: id
+            referencedTableName: customer
+            onDelete: RESTRICT
+
+        - sql:
+            sql: >
+              ALTER TABLE customer_legal_basis
+              ADD CONSTRAINT chk_customer_legal_basis_purpose
+              CHECK (purpose IN (
+              'IDENTITY_VERIFICATION',
+              'SERVICE_PROVISION',
+              'CREDIT_EVALUATION',
+              'CREDIT_BUREAU_REPORTING',
+              'REGULATORY_COMPLIANCE',
+              'MARKETING'
+              ))
+
+        - sql:
+            sql: >
+              ALTER TABLE customer_legal_basis
+              ADD CONSTRAINT chk_customer_legal_basis_legal_basis
+              CHECK (legal_basis IN ('CONSENT', 'CONTRACT', 'LEGAL_OBLIGATION', 'CREDIT_SOLVENCY'))
+
+        - sql:
+            sql: >
+              ALTER TABLE customer_legal_basis
+              ADD CONSTRAINT chk_customer_legal_basis_legal_basis_and_withdrawn_at
+              CHECK (withdrawn_at IS NULL OR legal_basis = 'CONSENT')
+
+        - sql:
+            sql: >
+              ALTER TABLE customer_legal_basis
+              ADD CONSTRAINT chk_customer_legal_basis_dates
+              CHECK (withdrawn_at IS NULL OR withdrawn_at >= captured_at)
+
+        - sql:
+            sql: >
+              CREATE UNIQUE INDEX uq_customer_legal_basis_active_purpose
+              ON customer_legal_basis (customer_id, purpose)
+              WHERE withdrawn_at IS NULL
